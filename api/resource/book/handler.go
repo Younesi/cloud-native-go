@@ -6,35 +6,40 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	e "myapp/api/resource/common/err"
+	validatorUtil "myapp/util/validator"
 )
 
 type API struct {
 	repository *Repository
+	validator  *validator.Validate
 }
 
-func New(db *gorm.DB) *API {
+func New(db *gorm.DB, validator *validator.Validate) *API {
 	return &API{
 		repository: NewRepository(db),
+		validator:  validator,
 	}
 }
 
 // List godoc
 //
-//	@summary        List books
-//	@description    List books
-//	@tags           books
-//	@accept         json
-//	@produce        json
-//	@success        200 {array}     DTO
-//	@failure        500 {object}    err.Error
-//	@router         /books [get]
+//	@summary		List books
+//	@description	List books
+//	@tags			books
+//	@accept			json
+//	@produce		json
+//	@success		200	{array}		DTO
+//	@failure		500	{object}	err.Error
+//	@router			/books [get]
 func (a *API) List(w http.ResponseWriter, r *http.Request) {
 	books, err := a.repository.List()
 	if err != nil {
-		// handle later
+		e.ServerError(w, e.RespDBDataAccessFailure)
 		return
 	}
 
@@ -44,28 +49,39 @@ func (a *API) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(books.ToDto()); err != nil {
-		// handle later
+		e.ServerError(w, e.RespJSONEncodeFailure)
 		return
 	}
 }
 
 // Create godoc
 //
-//	@summary        Create book
-//	@description    Create a single book
-//	@tags           books
-//	@accept         json
-//	@produce        json
-//	@param          body    body    Form    true    "Book form"
-//	@success        201
-//	@failure        400 {object}    err.Error
-//	@failure        422 {object}    err.Errors
-//	@failure        500 {object}    err.Error
-//	@router         /books [post]
+//	@summary		Create book
+//	@description	Create book
+//	@tags			books
+//	@accept			json
+//	@produce		json
+//	@param			body	body	Form	true	"Book form"
+//	@success		201
+//	@failure		400	{object}	err.Error
+//	@failure		422	{object}	err.Errors
+//	@failure		500	{object}	err.Error
+//	@router			/books [post]
 func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 	form := &Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
-		// handle later
+		e.ServerError(w, e.RespJSONDecodeFailure)
+		return
+	}
+
+	if err := a.validator.Struct(form); err != nil {
+		respBody, err := json.Marshal(validatorUtil.ToErrResponse(err))
+		if err != nil {
+			e.ServerError(w, e.RespJSONEncodeFailure)
+			return
+		}
+
+		e.ValidationErrors(w, respBody)
 		return
 	}
 
@@ -74,7 +90,7 @@ func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 
 	_, err := a.repository.Create(newBook)
 	if err != nil {
-		// handle later
+		e.ServerError(w, e.RespDBDataInsertFailure)
 		return
 	}
 
@@ -83,21 +99,21 @@ func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 
 // Read godoc
 //
-//	@summary        Read book
-//	@description    Get a single book
-//	@tags           books
-//	@accept         json
-//	@produce        json
-//	@param          id	path        string  true    "Book ID"
-//	@success        200 {object}    DTO
-//	@failure        400 {object}    err.Error
-//	@failure        404
-//	@failure        500 {object}    err.Error
-//	@router         /books/{id} [get]
+//	@summary		Read book
+//	@description	Read book
+//	@tags			books
+//	@accept			json
+//	@produce		json
+//	@param			id	path		string	true	"Book ID"
+//	@success		200	{object}	DTO
+//	@failure		400	{object}	err.Error
+//	@failure		404
+//	@failure		500	{object}	err.Error
+//	@router			/books/{id} [get]
 func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		// handle later
+		e.BadRequest(w, e.RespInvalidURLParamID)
 		return
 	}
 
@@ -108,42 +124,53 @@ func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// handle later
+		e.ServerError(w, e.RespDBDataAccessFailure)
 		return
 	}
 
 	dto := book.ToDto()
 	if err := json.NewEncoder(w).Encode(dto); err != nil {
-		// handle later
+		e.ServerError(w, e.RespJSONEncodeFailure)
 		return
 	}
 }
 
 // Update godoc
 //
-//	@summary        Update book
-//	@description    Update book
-//	@tags           books
-//	@accept         json
-//	@produce        json
-//	@param          id      path    string  true    "Book ID"
-//	@param          body    body    Form    true    "Book form"
-//	@success        200
-//	@failure        400 {object}    err.Error
-//	@failure        404
-//	@failure        422 {object}    err.Errors
-//	@failure        500 {object}    err.Error
-//	@router         /books/{id} [put]
+//	@summary		Update book
+//	@description	Update book
+//	@tags			books
+//	@accept			json
+//	@produce		json
+//	@param			id		path	string	true	"Book ID"
+//	@param			body	body	Form	true	"Book form"
+//	@success		200
+//	@failure		400	{object}	err.Error
+//	@failure		404
+//	@failure		422	{object}	err.Errors
+//	@failure		500	{object}	err.Error
+//	@router			/books/{id} [put]
 func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		// handle later
+		e.BadRequest(w, e.RespInvalidURLParamID)
 		return
 	}
 
 	form := &Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
-		// handle later
+		e.ServerError(w, e.RespJSONDecodeFailure)
+		return
+	}
+
+	if err := a.validator.Struct(form); err != nil {
+		respBody, err := json.Marshal(validatorUtil.ToErrResponse(err))
+		if err != nil {
+			e.ServerError(w, e.RespJSONEncodeFailure)
+			return
+		}
+
+		e.ValidationErrors(w, respBody)
 		return
 	}
 
@@ -152,7 +179,7 @@ func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.repository.Update(book)
 	if err != nil {
-		// handle later
+		e.ServerError(w, e.RespDBDataUpdateFailure)
 		return
 	}
 	if rows == 0 {
@@ -163,27 +190,27 @@ func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 
 // Delete godoc
 //
-//	@summary        Delete book
-//	@description    Delete book
-//	@tags           books
-//	@accept         json
-//	@produce        json
-//	@param          id  path    string  true    "Book ID"
-//	@success        200
-//	@failure        400 {object}    err.Error
-//	@failure        404
-//	@failure        500 {object}    err.Error
-//	@router         /books/{id} [delete]
+//	@summary		Delete book
+//	@description	Delete book
+//	@tags			books
+//	@accept			json
+//	@produce		json
+//	@param			id	path	string	true	"Book ID"
+//	@success		200
+//	@failure		400	{object}	err.Error
+//	@failure		404
+//	@failure		500	{object}	err.Error
+//	@router			/books/{id} [delete]
 func (a *API) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		// handle later
+		e.BadRequest(w, e.RespInvalidURLParamID)
 		return
 	}
 
 	rows, err := a.repository.Delete(id)
 	if err != nil {
-		// handle later
+		e.BadRequest(w, e.RespDBDataRemoveFailure)
 		return
 	}
 	if rows == 0 {
