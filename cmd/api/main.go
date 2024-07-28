@@ -3,19 +3,26 @@ package main
 import (
 	"fmt"
 	"log"
+	"myapp/api/router"
 	"myapp/config"
 	"net/http"
 )
 
+//  @title          MYAPP API
+//  @version        1.0
+//  @description    This is a sample RESTful API with a CRUD
+
+//  @contact.name   Mahdi Younesi
+
+// @host       localhost:8080
+// @basePath   /v1
 func main() {
 	c := config.New()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/hello", hiThere)
-
+	r := router.New()
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", c.Server.Port),
-		Handler:      mux,
+		Handler:      r,
 		ReadTimeout:  c.Server.TimeoutRead,
 		WriteTimeout: c.Server.TimeoutWrite,
 		IdleTimeout:  c.Server.TimeoutIdle,
