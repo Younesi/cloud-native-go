@@ -3,4 +3,29 @@
 
 
 
+
 This repository is for ptracticing/learning purposes.
+
+To do list :
+
+• Implement JWT-based authentication and role-based access control
+• Add centralized logging
+• Create Kubernetes manifests and Helm charts for deployment
+• Implement a CI/CD pipeline using GitLab CI
+• Set up Prometheus and Grafana for monitoring and observability
+• Add distributed tracing with Jaeger
+• Implement API rate limiting
+• Implement centralized logging with ELK stack
+• Integrate a service mesh using Istio
+• Set up an API gateway with Kong
+• Add Redis for caching
+• Use Terraform for infrastructure provisioning
+• Set up database read replicas for scaling
+• Create a serverless function using AWS Lambda
+• Use Terraform for infrastructure provisioning
+• Implement a simple event sourcing system for a feature
+• Set up a webhook system for notifications
+• Implement basic chaos testing with Chaos Mesh
+• Implement asynchronous processing using RabbitMQ
+• Set up a basic microservices architecture by splitting the bookshelf app into separate services
+• Create a basic GraphQL endpoint
