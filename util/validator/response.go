@@ -27,11 +27,7 @@ func ToErrResponse(err error) *ErrResponse {
 			case "alphaspace":
 				resp.Errors[i] = fmt.Sprintf("%s can only contain alphabetic and space characters", err.Field())
 			case "datetime":
-				if err.Param() == "2006-01-02" {
-					resp.Errors[i] = fmt.Sprintf("%s must be a valid date", err.Field())
-				} else {
-					resp.Errors[i] = fmt.Sprintf("%s must follow %s format", err.Field(), err.Param())
-				}
+				resp.Errors[i] = fmt.Sprintf("%s must be a valid date", err.Field())
 			default:
 				resp.Errors[i] = fmt.Sprintf("something wrong on %s; %s", err.Field(), err.Tag())
 			}

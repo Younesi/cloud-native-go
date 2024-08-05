@@ -2,7 +2,6 @@ package book
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -10,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	e "myapp/api/resource/common/err"
+	api "myapp/api/common"
 	validatorUtil "myapp/util/validator"
 )
 
@@ -39,18 +38,13 @@ func New(db *gorm.DB, validator *validator.Validate) *API {
 func (a *API) List(w http.ResponseWriter, r *http.Request) {
 	books, err := a.repository.List()
 	if err != nil {
-		e.ServerError(w, e.RespDBDataAccessFailure)
+		api.ServerError(w, api.RespDBDataAccessFailure)
 		return
 	}
 
-	if len(books) == 0 {
-		fmt.Fprint(w, "[]")
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(books.ToDto()); err != nil {
-		e.ServerError(w, e.RespJSONEncodeFailure)
-		return
+	err = api.WriteJson(w, http.StatusOK, books)
+	if err != nil {
+		api.ServerError(w, api.RespJSONEncodeFailure)
 	}
 }
 
@@ -70,18 +64,18 @@ func (a *API) List(w http.ResponseWriter, r *http.Request) {
 func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 	form := &Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
-		e.ServerError(w, e.RespJSONDecodeFailure)
+		api.ServerError(w, api.RespJSONDecodeFailure)
 		return
 	}
 
 	if err := a.validator.Struct(form); err != nil {
 		respBody, err := json.Marshal(validatorUtil.ToErrResponse(err))
 		if err != nil {
-			e.ServerError(w, e.RespJSONEncodeFailure)
+			api.ServerError(w, api.RespJSONEncodeFailure)
 			return
 		}
 
-		e.ValidationErrors(w, respBody)
+		api.ValidationErrors(w, respBody)
 		return
 	}
 
@@ -90,7 +84,7 @@ func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 
 	_, err := a.repository.Create(newBook)
 	if err != nil {
-		e.ServerError(w, e.RespDBDataInsertFailure)
+		api.ServerError(w, api.RespDBDataInsertFailure)
 		return
 	}
 
@@ -113,7 +107,7 @@ func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		e.BadRequest(w, e.RespInvalidURLParamID)
+		api.BadRequest(w, api.RespInvalidURLParamID)
 		return
 	}
 
@@ -124,14 +118,13 @@ func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		e.ServerError(w, e.RespDBDataAccessFailure)
+		api.ServerError(w, api.RespDBDataAccessFailure)
 		return
 	}
 
-	dto := book.ToDto()
-	if err := json.NewEncoder(w).Encode(dto); err != nil {
-		e.ServerError(w, e.RespJSONEncodeFailure)
-		return
+	err = api.WriteJson(w, http.StatusOK, book)
+	if err != nil {
+		api.ServerError(w, api.RespJSONEncodeFailure)
 	}
 }
 
@@ -153,24 +146,24 @@ func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		e.BadRequest(w, e.RespInvalidURLParamID)
+		api.BadRequest(w, api.RespInvalidURLParamID)
 		return
 	}
 
 	form := &Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
-		e.ServerError(w, e.RespJSONDecodeFailure)
+		api.ServerError(w, api.RespJSONDecodeFailure)
 		return
 	}
 
 	if err := a.validator.Struct(form); err != nil {
 		respBody, err := json.Marshal(validatorUtil.ToErrResponse(err))
 		if err != nil {
-			e.ServerError(w, e.RespJSONEncodeFailure)
+			api.ServerError(w, api.RespJSONEncodeFailure)
 			return
 		}
 
-		e.ValidationErrors(w, respBody)
+		api.ValidationErrors(w, respBody)
 		return
 	}
 
@@ -179,7 +172,7 @@ func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.repository.Update(book)
 	if err != nil {
-		e.ServerError(w, e.RespDBDataUpdateFailure)
+		api.ServerError(w, api.RespDBDataUpdateFailure)
 		return
 	}
 	if rows == 0 {
@@ -204,13 +197,13 @@ func (a *API) Update(w http.ResponseWriter, r *http.Request) {
 func (a *API) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		e.BadRequest(w, e.RespInvalidURLParamID)
+		api.BadRequest(w, api.RespInvalidURLParamID)
 		return
 	}
 
 	rows, err := a.repository.Delete(id)
 	if err != nil {
-		e.BadRequest(w, e.RespDBDataRemoveFailure)
+		api.BadRequest(w, api.RespDBDataRemoveFailure)
 		return
 	}
 	if rows == 0 {
