@@ -12,7 +12,7 @@ import (
 func New(db *gorm.DB, v *validator.Validate) *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Get("/livez", health.Read)
+	r.Get("/status", health.Status)
 
 	r.Route("/v1", func(r chi.Router) {
 		bookAPI := book.New(db, v)

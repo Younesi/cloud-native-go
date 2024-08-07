@@ -10,7 +10,7 @@ services:
       db:
         condition: service_healthy
     command: [ "sh", "-c", "/app/bin/migrate up && /app/bin/api" ]
-    restart: always
+    restart: no
       
   db:
     image: postgres:alpine
@@ -25,4 +25,4 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
-    restart: always
+    restart: no

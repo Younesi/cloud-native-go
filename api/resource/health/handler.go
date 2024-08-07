@@ -2,13 +2,13 @@ package health
 
 import "net/http"
 
-// Read godoc
+// Status godoc
 //
-//	@summary        Read health
-//	@description    Read health
+//	@summary        Status health
+//	@description    Status health
 //	@tags           health
 //	@success        200
-//	@router         /../livez [get]
-func Read(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("It is working"))
+//	@router         /../status [get]
+func Status(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("I'm fine"))
 }
