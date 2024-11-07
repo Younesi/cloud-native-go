@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/joeshaw/envdecode"
@@ -32,7 +32,7 @@ type ConfDB struct {
 func New() *Conf {
 	var c Conf
 	if err := envdecode.StrictDecode(&c); err != nil {
-		log.Fatalf("Failed to decode: %s", err)
+		slog.Error("Failed to decode config", slog.Any("error", err))
 	}
 
 	return &c
@@ -41,7 +41,7 @@ func New() *Conf {
 func NewDB() *ConfDB {
 	var c ConfDB
 	if err := envdecode.StrictDecode(&c); err != nil {
-		log.Fatalf("Failed to decode: %s", err)
+		slog.Error("Failed to decode config", slog.Any("error", err))
 	}
 
 	return &c
