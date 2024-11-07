@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"myapp/config"
 	"os"
 
@@ -38,17 +38,17 @@ func main() {
 
 	db, err := goose.OpenDBWithDriver(dialect, dbString)
 	if err != nil {
-		log.Fatalf(err.Error())
+		slog.Error("DB connection start failed", slog.Any("error", err))
 	}
 
 	defer func() {
 		if err := db.Close(); err != nil {
-			log.Fatalf(err.Error())
+			slog.Error("DB connection close failed", slog.Any("error", err))
 		}
 	}()
 
 	if err := goose.Run(command, db, *dir, args[1:]...); err != nil {
-		log.Fatalf("migrate %v: %v", command, err)
+		slog.Error("Migration failed", slog.Any("error", err))
 	}
 }
 

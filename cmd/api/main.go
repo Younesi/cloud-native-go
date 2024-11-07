@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"myapp/api/router"
 	"myapp/config"
 	"net/http"
@@ -39,7 +39,7 @@ func main() {
 	dbString := fmt.Sprintf(fmtDBString, c.DB.Host, c.DB.Username, c.DB.Password, c.DB.DBName, c.DB.Port)
 	db, err := gorm.Open(postgres.Open(dbString), &gorm.Config{Logger: gormlogger.Default.LogMode(logLevel)})
 	if err != nil {
-		log.Fatal("DB connection start failure")
+		slog.Error("DB connection start failed", slog.Any("error", err))
 		return
 	}
 
@@ -52,8 +52,8 @@ func main() {
 		IdleTimeout:  c.Server.TimeoutIdle,
 	}
 
-	log.Println("Starting server " + s.Addr)
+	slog.Info("Starting server " + s.Addr)
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal("Server startup failed")
+		slog.Error("Server startup failed", slog.Any("error", err))
 	}
 }

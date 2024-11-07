@@ -1,16 +1,16 @@
 package api
 
 import (
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
 func GetSecretKey() []byte {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Default().Println("Error loading .env file")
+		slog.Error("Error loading .env file", slog.Any("error", err))
 	}
 	key := os.Getenv("JWT_SECRET_KEY")
 	if key == "" {
