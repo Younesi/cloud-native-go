@@ -1,0 +1,34 @@
+# Ignore Go build artifacts
+/bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Ignore dependencies directory (if any)
+vendor/
+
+# Ignore configuration and environment files not needed for build
+.env
+*.local
+
+# Ignore temporary and log files
+*.log
+*.tmp
+*.out
+
+# Ignore version control and related files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore test files and coverage reports
+*.test
+*.prof
+coverage.out
