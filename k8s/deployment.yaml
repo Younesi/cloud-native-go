@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-cloud-app
+  labels:
+    app: my-cloud-app
+spec:
+  replicas: 3
+  selector: # Selector to identify which pods to manage
+    matchLabels:
+      app: my-cloud-app
+  template:
+    metadata:
+      labels:
+        app: my-cloud-app
+  spec:
+    containers:
+      - name: my-cloud-app
+        image: younesi/cloud-native-go:latest  
+        ports:
+          - containerPort: 8080
+        envFrom:
+        - configMapRef:
+          name: my-cloud-app-config
+        - secretRef:
+          name: my-cloud-app-secret
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250"
+          limits:
+            memory: "120Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 2
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+
