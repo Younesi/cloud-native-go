@@ -14,57 +14,53 @@ spec:
     metadata:
       labels:
         app: my-db
+    spec:
+      containers:
+        - name: my-db
+          image: postgres:alpine  
+          ports:
+            - containerPort: 5432
+          env:
+          - name: POSTGRES_DB
+            value: myapp_db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: my-cloud-app-secret
+                key: username  
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: my-cloud-app-secret
+                key: password
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "120Mi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "myapp_user"] # fix
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "myapp_user"] # fix
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/data
+volumeClaimTemplates:
+- metadata:
+    name: postgres-storage
   spec:
-    containers:
-      - name: my-db
-        image: postgres:alpine  
-        ports:
-          - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: myapp_db
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: my-cloud-app-secret
-              key: username  
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: my-cloud-app-secret
-              key: password
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-        volumeClaimTemplates:
-        - metadata:
-            name: postgres-storage
-          spec:
-            accessModes: [ "ReadWriteOnce" ]
-            resources:
-              requests:
-                storage: 5Gi
-        # resources:
-        #   requests:
-        #     memory: "64Mi"
-        #     cpu: "250"
-        #   limits:
-        #     memory: "120Mi"
-        #     cpu: "500m"
-        # readinessProbe:
-        #   httpGet:
-        #     path: /healthz
-        #     port: 8080
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
-        #   successThreshold: 2
-        #   failureThreshold: 3
-        # livenessProbe:
-        #   httpGet:
-        #     path: /healthz
-        #     port: 8080
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 15
-        #   timeoutSeconds: 5
-        #   failureThreshold: 3
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 5Gi
 
