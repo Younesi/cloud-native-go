@@ -5,6 +5,10 @@ metadata:
 spec:
   template:
     spec:
+      initContainers:
+      - name: wait-for-db
+        image: alpine
+        command: ['sh', '-c', 'until nc -z my-db 5432; do echo waiting for database; sleep 2; done;']
       containers:
       - name: migrate
         image: younesi/cloud-native-go:latest
