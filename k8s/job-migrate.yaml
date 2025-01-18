@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: my-cloud-app-migrate
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: alpine
+        command: ['sh', '-c', 'until nc -z my-db 5432; do echo waiting for database; sleep 2; done;']
+      containers:
+      - name: migrate
+        image: younesi/cloud-native-go:latest
+        command: ["/app/bin/migrate", "up"]
+        envFrom:
+        - configMapRef:
+            name: my-cloud-app-config
+        - secretRef:
+            name: my-cloud-app-secret
+      restartPolicy: Never

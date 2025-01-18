@@ -42,13 +42,13 @@ spec:
               cpu: "500m"
           livenessProbe:
             exec:
-              command: ["pg_isready", "-U", "myapp_user"] # fix
+              command: ["pg_isready", "-U", "myapp_user"]
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", "myapp_user"] # fix
+              command: ["pg_isready", "-U", "myapp_user"] 
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
