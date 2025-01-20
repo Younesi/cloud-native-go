@@ -1,0 +1,43 @@
+# Application configuration
+app:
+ name: my-cloud-app
+ image:
+   repository: younesi/cloud-native-go
+   tag: latest
+ replicas: 3
+ resources:
+   requests:
+     cpu: 250m
+     memory: 64Mi
+   limits:
+     cpu: 500m
+     memory: 120Mi
+
+# Database configuration 
+database:
+ name: my-db
+ image:
+   repository: postgres
+   tag: alpine
+ resources:
+   requests:
+     cpu: 250m
+     memory: 64Mi
+   limits:
+     cpu: 500m
+     memory: 120Mi
+ storage:
+   size: 5Gi
+
+# Service configuration
+service:
+ app:
+   port: 8080
+ db:
+   port: 5432
+
+# Ingress configuration
+ingress:
+ enabled: true
+ className: nginx
+ host: "*"
