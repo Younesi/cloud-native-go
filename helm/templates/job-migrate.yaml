@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.app.name }}-migrate
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: alpine
+        command: ['sh', '-c', 'until nc -z {{ .Values.database.name }} {{ .Values.service.db.port }}; do echo waiting for database; sleep 2; done;']
+      containers:
+      - name: migrate
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        command: ["/app/bin/migrate", "up"]
+      restartPolicy: Never
