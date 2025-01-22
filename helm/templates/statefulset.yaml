@@ -16,25 +16,50 @@ spec:
         app: {{ .Values.database.name }}
     spec:
       containers:
-      - name: {{ .Values.database.name }}
-        image: {{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}
-        ports:
-        - containerPort: {{ .Values.service.db.port }}
+        - name: {{ .Values.database.name }}
+          image: {{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}
+          ports:
+            - containerPort: {{ .Values.service.db.port }}
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.database.name }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: my-cloud-app-secret
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-cloud-app-secret
+                  key: DB_PASS
+          resources:
+            requests:
+              memory: {{ .Values.database.resources.requests.memory }}
+              cpu: {{ .Values.database.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.database.resources.limits.memory }}
+              cpu: {{ .Values.database.resources.limits.cpu }}
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "myapp_user"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "myapp_user"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            memory: {{ .Values.database.resources.requests.memory }}
-            cpu: {{ .Values.database.resources.requests.cpu }}
-          limits:
-            memory: {{ .Values.database.resources.limits.memory }}
-            cpu: {{ .Values.database.resources.limits.cpu }}
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
-  - metadata:
-      name: postgres-storage
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: {{ .Values.database.storage.size }}
+            storage: {{ .Values.database.storage.size }}
