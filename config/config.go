@@ -2,6 +2,7 @@ package config
 
 import (
 	"log/slog"
+	"os"
 	"time"
 
 	"github.com/joeshaw/envdecode"
@@ -17,7 +18,7 @@ type ConfServer struct {
 	TimeoutRead  time.Duration `env:"SERVER_TIMEOUT_READ,required"`
 	TimeoutWrite time.Duration `env:"SERVER_TIMEOUT_WRITE,required"`
 	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE,required"`
-	Debug        bool          `env:"SERVER_DEBUG,required"`
+	Debug        bool          `env:"SERVER_DEBUG"`
 }
 
 type ConfDB struct {
@@ -26,7 +27,7 @@ type ConfDB struct {
 	Username string `env:"DB_USER,required"`
 	Password string `env:"DB_PASS,required"`
 	DBName   string `env:"DB_NAME,required"`
-	Debug    bool   `env:"DB_DEBUG,required"`
+	Debug    bool   `env:"DB_DEBUG"`
 }
 
 func New() *Conf {
@@ -35,6 +36,10 @@ func New() *Conf {
 		slog.Error("Failed to decode config", slog.Any("error", err))
 	}
 
+	// Set default value for SERVER_DEBUG if not provided
+	if _, exists := os.LookupEnv("SERVER_DEBUG"); !exists {
+		c.Server.Debug = false // Default value
+	}
 	return &c
 }
 
@@ -42,6 +47,11 @@ func NewDB() *ConfDB {
 	var c ConfDB
 	if err := envdecode.StrictDecode(&c); err != nil {
 		slog.Error("Failed to decode config", slog.Any("error", err))
+	}
+
+	// Set default value for DB_DEBUG if not provided
+	if _, exists := os.LookupEnv("DB_DEBUG"); !exists {
+		c.Debug = false
 	}
 
 	return &c
