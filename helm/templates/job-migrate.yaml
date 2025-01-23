@@ -2,8 +2,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Values.app.name }}-migrate
+  labels:
+    {{- include "cloud-native-go.labels" . | nindent 4 }}
 spec:
   template:
+    metadata:
+      labels:
+        {{- include "cloud-native-go.labels" . | nindent 8 }}
     spec:
       initContainers:
       - name: wait-for-db

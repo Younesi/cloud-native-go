@@ -1,6 +1,6 @@
 # Application configuration
 app:
- name: my-cloud-app
+ name: go-cloud-app
  image:
    repository: younesi/cloud-native-go
    tag: latest

@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: {{ .Values.database.name }}
   labels:
-    app: {{ .Values.database.name }}
+    app: {{- include "cloud-native-go.labels" . | nindent 4 }}
 spec:
   selector:
-    app: {{ .Values.database.name }}
+    app: {{ include "cloud-native-go.fullname" . }}
   ports:
   - port: {{ .Values.service.db.port }}

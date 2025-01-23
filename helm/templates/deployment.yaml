@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ .Values.app.name }}
   labels:
-    app: {{ .Values.app.name }}
+    app: {{- include "cloud-native-go.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.app.name }}
+      app: {{ include "cloud-native-go.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ .Values.app.name }}
+        app: {{- include "cloud-native-go.labels" . | nindent 8 }}
     spec:
       containers:
       - name: {{ .Values.app.name }}
@@ -21,9 +21,9 @@ spec:
         - containerPort: {{ .Values.service.app.port }}
         envFrom:
           - configMapRef:
-              name: my-cloud-app-config
+              name:  {{ .Values.app.name }}-config
           - secretRef:
-              name: my-cloud-app-secret
+              name:  {{ .Values.app.name }}-secret
         resources:
           requests:
             memory: {{ .Values.app.resources.requests.memory }}
