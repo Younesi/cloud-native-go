@@ -3,17 +3,17 @@ kind: StatefulSet
 metadata:
   name: {{ .Values.database.name }}
   labels:
-    app: {{ .Values.database.name }}
+    app: {{- include "cloud-native-go.labels" . | nindent 4 }}
 spec:
   serviceName: {{ .Values.database.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.database.name }}
+      app: {{ include "cloud-native-go.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ .Values.database.name }}
+        app: {{- include "cloud-native-go.labels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.database.name }}
@@ -26,12 +26,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: my-cloud-app-secret
+                  name: {{ .Values.app.name }}-secret
                   key: DB_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: my-cloud-app-secret
+                  name: {{ .Values.app.name }}-secret
                   key: DB_PASS
           resources:
             requests:
