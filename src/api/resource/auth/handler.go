@@ -2,9 +2,10 @@ package auth
 
 import (
 	"encoding/json"
-	"myapp/api"
 	"net/http"
 	"time"
+
+	"myapp/src/api"
 
 	"github.com/golang-jwt/jwt/v5"
 )

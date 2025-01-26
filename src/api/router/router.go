@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strings"
 
+	"myapp/src/api"
+	"myapp/src/api/resource/auth"
+	"myapp/src/api/resource/book"
+	"myapp/src/api/resource/health"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
-
-	"myapp/api"
-	"myapp/api/resource/auth"
-	"myapp/api/resource/book"
-	"myapp/api/resource/health"
 )
 
 func New(db *gorm.DB, v *validator.Validate) *chi.Mux {
