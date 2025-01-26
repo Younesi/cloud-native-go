@@ -8,3 +8,10 @@ doc
 LICENSE
 docker-compose.yml
 .swagger
+.vscode
+bin/
+*.md
+*.sqlite
+*.log
+k8s/
+helm/
