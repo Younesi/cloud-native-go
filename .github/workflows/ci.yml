@@ -1,7 +1,14 @@
-name: Run Tests
-on: push
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
+  # add your desired jobs here, e.g. build, push, test, and deploy on different platforms
   test:
     runs-on: ubuntu-latest
     steps:
