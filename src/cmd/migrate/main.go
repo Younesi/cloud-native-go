@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
-	"myapp/config"
+	"myapp/src/config"
 	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"

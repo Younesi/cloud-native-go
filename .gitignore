@@ -4,7 +4,6 @@
 .gitignore
 .idea
 .vscode
-.github
 .DS_Store
 doc
 LICENSE

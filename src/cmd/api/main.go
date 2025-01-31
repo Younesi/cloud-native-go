@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"log/slog"
-	"myapp/api/router"
-	"myapp/config"
 	"net/http"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	validatorUil "myapp/util/validator"
+	"myapp/src/api/router"
+	"myapp/src/config"
+	validatorUil "myapp/src/util/validator"
 
 	gormlogger "gorm.io/gorm/logger"
 )

@@ -1,15 +1,15 @@
 package book_test
 
 import (
-	"myapp/api/resource/book"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 
-	mockDB "myapp/mock/db"
-	testUtil "myapp/util/test"
+	mockDB "myapp/src/mock/db"
+	"myapp/src/api/resource/book"
+	testUtil "myapp/src/util/test"
 )
 
 func TestRepository_List(t *testing.T) {
@@ -64,7 +64,7 @@ func TestRepository_Read(t *testing.T) {
 		AddRow(id, "Book1", "Author1")
 
 	mock.ExpectQuery("^SELECT (.+) FROM \"books\" WHERE (.+)").
-		WithArgs(id).
+		WithArgs(id, 1).
 		WillReturnRows(mockRows)
 
 	book, err := repo.Read(id)
@@ -95,7 +95,6 @@ func TestRepository_Update(t *testing.T) {
 	testUtil.NoError(t, err)
 	testUtil.Equal(t, 1, rows)
 }
-
 
 func TestRepository_Delete(t *testing.T) {
 	t.Parallel()

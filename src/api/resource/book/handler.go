@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	api "myapp/api/common"
-	validatorUtil "myapp/util/validator"
+	api "myapp/src/api/common"
+	validatorUtil "myapp/src/util/validator"
 )
 
 type API struct {
