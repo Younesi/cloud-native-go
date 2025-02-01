@@ -24,7 +24,7 @@ const fmtDBString = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disab
 //  @contact.name   Mahdi Younesi
 
 // @host       localhost:8080
-// @basePath   /v1
+// @basePath   /v1.
 func main() {
 	c := config.New()
 	v := validatorUil.New()
