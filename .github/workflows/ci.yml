@@ -39,6 +39,3 @@ jobs:
         with:
           version: latest
           args: --timeout 5m
-
-      - name: Run linter
-        run: golangci-lint run --verbose --timeout '60s' --out-format 'colored-line-number'
