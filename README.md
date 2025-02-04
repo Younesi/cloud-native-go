@@ -5,18 +5,18 @@ This repository is for practice/learning purposes.
 
 ## 🚀 Features included
 
-- The idiomatic structure based on the resource-oriented design.
-- The usage of Docker, Docker compose, Alpine images, and linters on development.
-- Healthcheck and CRUD API implementations with OpenAPI specifications.
-- The usage of [Goose](https://github.com/pressly/goose) for the database migrations and [GORM](https://gorm.io/) as the database ORM.
-- The usage of [`Slog`](https://pkg.go.dev/log/slog) for structured logging.
-- The usage of [Validator.v10](https://github.com/go-playground/validator) as the validator.
-- JWT-based authentication and role-based access control 
-- Create Kubernetes manifests and Helm charts for deployment 
+- An idiomatic structure based on resource-oriented design.
+- Dockerized development with Docker, Docker Compose, Alpine images, and linters.
+- Healthcheck and CRUD API implementations following OpenAPI specifications.
+- Database migrations using [Goose](https://github.com/pressly/goose) and ORM management with [GORM](https://gorm.io/).
+- Structured logging with [`Slog`](https://pkg.go.dev/log/slog).
+- Data validation using [Validator.v10](https://github.com/go-playground/validator).
+- JWT-based authentication with role-based access control.
+- Kubernetes manifests and Helm charts for deployment.
+- A CI/CD pipeline implemented with GitHub Actions.
 
 ## ⌛ Upcoming Features
 
-- Implement a CI/CD pipeline using GitHub CI
 - The usage of GitHub actions to run tests and linters, generate OpenAPI specifications, and build and push production images to the Docker registry.
 - Add gRPC endpoints for high-performance communication
 - Set up Prometheus and Grafana for monitoring and observability
